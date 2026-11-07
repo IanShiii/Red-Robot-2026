@@ -50,7 +50,7 @@ class RxCallbacks : public NimBLECharacteristicCallbacks {
     if (len == 0)
       return;
 
-    // Copy into a NUL-terminated buffer so sscanf can't run past the data
+    // Preserve raw command bytes; append a NUL for optional text logging.
     char buf[32];
     if (len >= sizeof(buf))
       len = sizeof(buf) - 1;
