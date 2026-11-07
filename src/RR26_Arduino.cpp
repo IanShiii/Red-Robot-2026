@@ -7,6 +7,7 @@
 // Libraries with driver code (don't remove these!)
 #include <Arduino.h>                // make sure this is first
 #include "RedRobot.h"
+#include "Autons.h"
 
 // Declare some global variables
 bool started; // boolean (true or false) to keep track of if we should start
@@ -31,26 +32,12 @@ void setup() {
 // Look at RedRobot.h to see the robot interface: what functions you can call and how.
 void AutonomousLoop() {
 
-    if (!started) { // e.g. get out of the starting box
+    if (!started) {
         started = true;
-
-        // move forward - set motors 2 and 3 to speed 30
-        RedRobot::WriteDCMotor(2, 30);
-        RedRobot::WriteDCMotor(3, 30);
-
-        // wait 1000 milliseconds = 1 second
-        delay(1000);
-
-        // turn right - set motor 2 to speed 30 and motor 3 to -30
-        RedRobot::WriteDCMotor(2, 30);
-        RedRobot::WriteDCMotor(3, -30);
-
-        delay(500); // half a second
-
-        // stop the motors
-        RedRobot::WriteDCMotor(2, 0);
-        RedRobot::WriteDCMotor(3, 0);
+        Autons::Auton1::Start();
     }
+
+    Autons::Auton1::Loop();
     
     // Print to the serial console to debug!
     Serial.print("[AUTO] Running ");
