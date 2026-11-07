@@ -151,7 +151,7 @@ namespace Servo {
   };
 
   void init() {
-    ledcSetClockSource(LEDC_USE_RTC8M_CLK);
+    ledcSetClockSource(LEDC_USE_RC_FAST_CLK);
     Serial.println("[SERVO] Initializing channels...");
 
     for (int i = 0; i < 4; i++) {
@@ -458,7 +458,7 @@ void WriteDCMotor(uint8_t d, int16_t speed) {
     if (actuatorMutex) xSemaphoreGive(actuatorMutex);
 }
 
-static void Brake() {
+void Brake() {
     for (uint8_t i = 0; i < 4; i++)
       WriteDCMotor(i, 0);
 }
