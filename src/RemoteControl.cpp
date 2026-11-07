@@ -94,32 +94,80 @@ namespace Bluefruit
 
 namespace RR_Controller
 {
-  void Joystick1(int8_t x, int8_t y)
-  {
-    if (useTankDrive)
-      RedRobot::WriteDCMotor(2, y);
-    else
-    {
-      int leftMotor = y + x;
-      int rightMotor = y - x;
+  static int8_t leftX = 0;
+  static int8_t leftY = 0;
+  static int8_t rightX = 0;
+  static int8_t rightY = 0;
+
+  static constexpr float JOYSTICK_DEADZONE = 5.0;
+  static constexpr float MIN_EFFECTIVE_SPEED = 5.0;
+  static constexpr float RESPONSE_CURVE_EXPONENT = 1.5;
+
+  void UpdateDrive() {
+    if (!RedRobot::IsRemoteControlled())
+      return;
+    
+    // Apply deadzone
+    int8_t shaped_leftX = (abs(leftX) < JOYSTICK_DEADZONE) ? 0 : leftX;
+    int8_t shaped_leftY = (abs(leftY) < JOYSTICK_DEADZONE) ? 0 : leftY;
+    int8_t shaped_rightX = (abs(rightX) < JOYSTICK_DEADZONE) ? 0 : rightX;
+    int8_t shaped_rightY = (abs(rightY) < JOYSTICK_DEADZONE) ? 0 : rightY;
+
+    // Apply exponential response shaping
+    shaped_leftX = pow(shaped_leftX / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftX < 0 ? -1 : 1);
+    shaped_leftY = pow(shaped_leftY / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftY < 0 ? -1 : 1);
+    shaped_rightX = pow(shaped_rightX / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightX < 0 ? -1 : 1);
+    shaped_rightY = pow(shaped_rightY / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightY < 0 ? -1 : 1);
+
+    int16_t leftWheelSpeed = 0;
+    int16_t rightWheelSpeed = 0;
+
+    if (useTankDrive) {
+      leftWheelSpeed = shaped_leftY;
+      rightWheelSpeed = shaped_rightY;
 
       // Normalize to [-100, 100]
-      int maxMagnitude = max(abs(leftMotor), abs(rightMotor));
+      int maxMagnitude = max(abs(leftWheelSpeed), abs(rightWheelSpeed));
 
-      if (maxMagnitude > 100)
-      {
-        leftMotor = leftMotor * 75 / maxMagnitude;
-        rightMotor = rightMotor * 75 / maxMagnitude;
+      if (maxMagnitude > 100) {
+        leftWheelSpeed = leftWheelSpeed * 75 / maxMagnitude;
+        rightWheelSpeed = rightWheelSpeed * 75 / maxMagnitude;
       }
-      RedRobot::WriteDCMotor(2, leftMotor);
-      RedRobot::WriteDCMotor(3, rightMotor);
+    } else {
+      leftWheelSpeed = leftY + rightX;
+      rightWheelSpeed = leftY - rightX;
+
+      int maxMagnitude = max(abs(leftWheelSpeed), abs(rightWheelSpeed));
+      if (maxMagnitude > 100) {
+        leftWheelSpeed = leftWheelSpeed * 100 / maxMagnitude;
+        rightWheelSpeed = rightWheelSpeed * 100 / maxMagnitude;
+      }
     }
+
+    // Apply minimum effective speed threshold
+    if (abs(leftWheelSpeed) < MIN_EFFECTIVE_SPEED) {
+      leftWheelSpeed = 0;
+    }
+    if (abs(rightWheelSpeed) < MIN_EFFECTIVE_SPEED) {
+      rightWheelSpeed = 0;
+    }
+
+    RedRobot::WriteDCMotor(2, leftWheelSpeed);
+    RedRobot::WriteDCMotor(3, rightWheelSpeed);
+  }
+
+  void Joystick1(int8_t x, int8_t y)
+  {
+    leftX = x;
+    leftY = y;
+    UpdateDrive();
   }
 
   void Joystick2(int8_t x, int8_t y)
   {
-    if (useTankDrive)
-      RedRobot::WriteDCMotor(3, y);
+    rightX = x;
+    rightY = y;
+    UpdateDrive();
   }
 
   /* DPad_Pressed is called everytime a D-Pad button is pressed or released.
