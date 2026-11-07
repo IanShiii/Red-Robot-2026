@@ -1,5 +1,4 @@
 #include "RedRobot.h"
-#include "Derivs_Limiter.h"
 
 bool useTankDrive = false;
 
@@ -106,13 +105,6 @@ namespace RR_Controller
 
   static constexpr float ARCADE_TURN_SPEED_SCALE = 0.5; // Scale down turning speed for arcade drive to make it easier to control
 
-  static constexpr float MOTOR_VEL_LIMIT = 100.0;
-  static constexpr float MOTOR_ACCEL_LIMIT = 400.0;
-  static constexpr float MOTOR_DECEL_LIMIT = 400.0;
-
-  Derivs_Limiter leftMotorLimiter(MOTOR_VEL_LIMIT, MOTOR_ACCEL_LIMIT, MOTOR_DECEL_LIMIT);
-  Derivs_Limiter rightMotorLimiter(MOTOR_VEL_LIMIT, MOTOR_ACCEL_LIMIT, MOTOR_DECEL_LIMIT);
-
   void UpdateDrive() {
     if (!RedRobot::IsRemoteControlled())
       return;
@@ -124,10 +116,10 @@ namespace RR_Controller
     int8_t shaped_rightY = (abs(rightY) < JOYSTICK_DEADZONE) ? 0 : rightY;
 
     // Apply exponential response shaping
-    shaped_leftX = pow(shaped_leftX / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftX < 0 ? -1 : 1);
-    shaped_leftY = pow(shaped_leftY / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftY < 0 ? -1 : 1);
-    shaped_rightX = pow(shaped_rightX / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightX < 0 ? -1 : 1);
-    shaped_rightY = pow(shaped_rightY / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightY < 0 ? -1 : 1);
+    shaped_leftX = pow(abs(shaped_leftX) / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftX < 0 ? -1 : 1);
+    shaped_leftY = pow(abs(shaped_leftY) / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_leftY < 0 ? -1 : 1);
+    shaped_rightX = pow(abs(shaped_rightX) / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightX < 0 ? -1 : 1);
+    shaped_rightY = pow(abs(shaped_rightY) / 100.0, RESPONSE_CURVE_EXPONENT) * 100 * (shaped_rightY < 0 ? -1 : 1);
 
     int16_t leftWheelSpeed = 0;
     int16_t rightWheelSpeed = 0;
@@ -162,14 +154,8 @@ namespace RR_Controller
       rightWheelSpeed = 0;
     }
 
-    leftMotorLimiter.setVelTarget(leftWheelSpeed);
-    rightMotorLimiter.setVelTarget(rightWheelSpeed);
-
-    leftMotorLimiter.calc();
-    rightMotorLimiter.calc();
-
-    RedRobot::WriteDCMotor(2, leftMotorLimiter.getVelocity());
-    RedRobot::WriteDCMotor(3, rightMotorLimiter.getVelocity());
+    RedRobot::WriteDCMotor(2, leftWheelSpeed);
+    RedRobot::WriteDCMotor(3, rightWheelSpeed);
   }
 
   void Joystick1(int8_t x, int8_t y)
