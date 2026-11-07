@@ -180,7 +180,7 @@ namespace RR_Controller
   void DPad_Pressed(button_t Button, bool buttonPressedDown)
   {
     // values stay the same between calls to DPad_Pressed
-    static bool button_pressed[5] = {false, false, false, false, false};
+    [[maybe_unused]] static bool button_pressed[5] = {false, false, false, false, false};
     button_pressed[Button] = (buttonPressedDown == true);
   }
 
