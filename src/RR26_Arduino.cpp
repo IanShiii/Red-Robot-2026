@@ -52,40 +52,6 @@ void AutonomousLoop() {
         RedRobot::WriteDCMotor(3, 0);
     }
     
-    // repeatedly move the servo and get in scoring position
-    // remember that the below code will run repeatedly since we are in
-    // the AutonomousLoop!
-
-    // set all servos to angle 0
-    RedRobot::SetServo(0, 0);
-    RedRobot::SetServo(1, 0);
-    RedRobot::SetServo(2, 0);
-    RedRobot::SetServo(3, 0);
-
-    // move forward at speed 50
-    RedRobot::WriteDCMotor(2, 50);
-    RedRobot::WriteDCMotor(3, 50);
-
-    delay(1000);
-
-    // stop the motors
-    RedRobot::WriteDCMotor(2, 0);
-    RedRobot::WriteDCMotor(3, 0);
-
-    // set the motors to different angles
-    RedRobot::SetServo(0, 90);
-    RedRobot::SetServo(1, 180);
-    RedRobot::SetServo(2, 90);
-    RedRobot::SetServo(3, 180);
-
-    delay(500);
-
-    // move backward
-    RedRobot::WriteDCMotor(2, -50);
-    RedRobot::WriteDCMotor(3, -50);
-
-    delay(1000);
-    
     // Print to the serial console to debug!
     Serial.print("[AUTO] Running ");
     Serial.print(counter);
