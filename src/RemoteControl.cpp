@@ -103,6 +103,8 @@ namespace RR_Controller
   static constexpr float MIN_EFFECTIVE_SPEED = 5.0;
   static constexpr float RESPONSE_CURVE_EXPONENT = 1.5;
 
+  static constexpr float ARCADE_TURN_SPEED_SCALE = 0.5; // Scale down turning speed for arcade drive to make it easier to control
+
   void UpdateDrive() {
     if (!RedRobot::IsRemoteControlled())
       return;
@@ -134,8 +136,8 @@ namespace RR_Controller
         rightWheelSpeed = rightWheelSpeed * 75 / maxMagnitude;
       }
     } else {
-      leftWheelSpeed = leftY + rightX;
-      rightWheelSpeed = leftY - rightX;
+      leftWheelSpeed = leftY + rightX * ARCADE_TURN_SPEED_SCALE;
+      rightWheelSpeed = leftY - rightX * ARCADE_TURN_SPEED_SCALE;
 
       int maxMagnitude = max(abs(leftWheelSpeed), abs(rightWheelSpeed));
       if (maxMagnitude > 100) {
