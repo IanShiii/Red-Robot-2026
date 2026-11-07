@@ -100,7 +100,7 @@ namespace RR_Controller
   static int8_t rightY = 0;
 
   static constexpr float JOYSTICK_DEADZONE = 5.0;
-  static constexpr float MIN_EFFECTIVE_SPEED = 5.0;
+  static constexpr float MIN_EFFECTIVE_SPEED = 25.0;
   static constexpr float RESPONSE_CURVE_EXPONENT = 1.5;
 
   static constexpr float ARCADE_TURN_SPEED_SCALE = 0.5; // Scale down turning speed for arcade drive to make it easier to control
