@@ -181,40 +181,7 @@ namespace RR_Controller
   {
     // values stay the same between calls to DPad_Pressed
     static bool button_pressed[5] = {false, false, false, false, false};
-
     button_pressed[Button] = (buttonPressedDown == true);
-
-    // TODO: edit your speed output to the yellow motors below!
-    // stop = 0, slow = 50, fast = 100
-    // range [-100,100]
-
-    int left_speed = 0;
-    int right_speed = 0;
-
-    if (button_pressed[UP])
-    { // Forward
-      left_speed += 100;
-      right_speed += 100;
-    }
-    if (button_pressed[DOWN])
-    { // Backward
-      left_speed -= 100;
-      right_speed -= 100;
-    }
-    if (button_pressed[LEFT])
-    { // Turn left_speed
-      left_speed -= 50;
-      right_speed += 50;
-    }
-    if (button_pressed[RIGHT])
-    { // Turn right_speed
-      left_speed += 50;
-      right_speed -= 50;
-    }
-
-    // Clamp and write speeds
-    RedRobot::WriteDCMotor(2, constrain(left_speed, -100, 100));
-    RedRobot::WriteDCMotor(3, constrain(right_speed, -100, 100));
   }
 
   void ButtonX_Pressed(bool buttonPressedDown)
