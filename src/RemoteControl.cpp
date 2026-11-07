@@ -1,4 +1,5 @@
 #include "RedRobot.h"
+#include "Derivs_Limiter.h"
 
 bool useTankDrive = false;
 
@@ -105,6 +106,13 @@ namespace RR_Controller
 
   static constexpr float ARCADE_TURN_SPEED_SCALE = 0.5; // Scale down turning speed for arcade drive to make it easier to control
 
+  static constexpr float MOTOR_VEL_LIMIT = 100.0;
+  static constexpr float MOTOR_ACCEL_LIMIT = 400.0;
+  static constexpr float MOTOR_DECEL_LIMIT = 400.0;
+
+  Derivs_Limiter leftMotorLimiter(MOTOR_VEL_LIMIT, MOTOR_ACCEL_LIMIT, MOTOR_DECEL_LIMIT);
+  Derivs_Limiter rightMotorLimiter(MOTOR_VEL_LIMIT, MOTOR_ACCEL_LIMIT, MOTOR_DECEL_LIMIT);
+
   void UpdateDrive() {
     if (!RedRobot::IsRemoteControlled())
       return;
@@ -154,8 +162,14 @@ namespace RR_Controller
       rightWheelSpeed = 0;
     }
 
-    RedRobot::WriteDCMotor(2, leftWheelSpeed);
-    RedRobot::WriteDCMotor(3, rightWheelSpeed);
+    leftMotorLimiter.setVelTarget(leftWheelSpeed);
+    rightMotorLimiter.setVelTarget(rightWheelSpeed);
+
+    leftMotorLimiter.calc();
+    rightMotorLimiter.calc();
+
+    RedRobot::WriteDCMotor(2, leftMotorLimiter.getVelocity());
+    RedRobot::WriteDCMotor(3, rightMotorLimiter.getVelocity());
   }
 
   void Joystick1(int8_t x, int8_t y)
