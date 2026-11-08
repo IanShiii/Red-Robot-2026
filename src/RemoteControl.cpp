@@ -180,8 +180,24 @@ namespace RR_Controller
   void DPad_Pressed(button_t Button, bool buttonPressedDown)
   {
     // values stay the same between calls to DPad_Pressed
-    [[maybe_unused]] static bool button_pressed[5] = {false, false, false, false, false};
+    static bool button_pressed[5] = {false, false, false, false, false};
     button_pressed[Button] = (buttonPressedDown == true);
+
+    if (!RedRobot::IsRemoteControlled())
+      return;
+
+    // Run Intake
+    if (button_pressed[UP]) {
+      RedRobot::WriteDCMotor(0, 100);
+    }
+    // Run Outtake
+    else if (button_pressed[DOWN]) {
+      RedRobot::WriteDCMotor(0, -100);
+    }
+    // Stop Intake/Outtake
+    else if (button_pressed[RIGHT]) {
+      RedRobot::WriteDCMotor(0, 0);
+    }
   }
 
   void ButtonX_Pressed(bool buttonPressedDown)
@@ -196,18 +212,29 @@ namespace RR_Controller
     }
   }
 
+  // Raise Arm
   void ButtonY_Pressed(bool buttonPressedDown)
   {
-    Serial.printf("Y pressed\n");
-    if (buttonPressedDown)
-      useTankDrive = !useTankDrive;
+    if (!RedRobot::IsRemoteControlled()) {
+      return;
+    }
+    RedRobot::SetServo(0, 90);
   }
 
+  // Nothing
   void ButtonB_Pressed(bool buttonPressedDown)
   {
+    if (!RedRobot::IsRemoteControlled()) {
+      return;
+    }
   }
 
+  // Lower Arm
   void ButtonA_Pressed(bool buttonPressedDown)
   {
+    if (!RedRobot::IsRemoteControlled()) {
+      return;
+    }
+    RedRobot::SetServo(0, 0);
   }
 }
