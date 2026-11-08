@@ -78,18 +78,10 @@ void Autons::LineFollowing::FollowLine() {
         }
     }
 
-    // Stop when all sensors lose the line
-    if (blackCount == 0) {
-        RedRobot::WriteDCMotor(2, 0);
-        RedRobot::WriteDCMotor(3, 0);
-        return;
-    }
-
     int leftSpeed;
     int rightSpeed;
 
-    if (blackCount == 6) {
-        // Move slowly through all-black areas
+    if (blackCount == 6 || blackCount == 0) {
         leftSpeed = 20;
         rightSpeed = 20;
     } else {
