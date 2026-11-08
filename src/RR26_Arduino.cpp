@@ -34,10 +34,11 @@ void AutonomousLoop() {
 
     if (!started) {
         started = true;
-        Autons::Auton1::Start();
+        // Autons::Auton1::Start();
     }
 
-    Autons::Auton1::Loop();
+    // Autons::Auton1::Loop();
+    Autons::LineFollowing::FollowLine();
     
     // Print to the serial console to debug!
     Serial.print("[AUTO] Running ");

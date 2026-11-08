@@ -55,3 +55,52 @@ void Autons::Auton1::Start() {
 void Autons::Auton1::Loop() {
     return;
 }
+
+void Autons::LineFollowing::FollowLine() {
+    uint16_t values[6];
+    RedRobot::ReadLineSensor(values);
+
+    if (RedRobot::IsRemoteControlled()) {
+        return;
+    }
+
+    int blackCount = 0;
+    int weightedSum = 0;
+    bool black[6];
+
+    for (int i = 0; i < 6; i++) {
+        int channel = i;
+        black[i] = values[channel] > thresholds[channel];
+
+        if (black[i]) {
+            blackCount++;
+            weightedSum += weights[i];
+        }
+    }
+
+    // Stop when all sensors lose the line
+    if (blackCount == 0) {
+        RedRobot::WriteDCMotor(2, 0);
+        RedRobot::WriteDCMotor(3, 0);
+        return;
+    }
+
+    int leftSpeed;
+    int rightSpeed;
+
+    if (blackCount == 6) {
+        // Move slowly through all-black areas
+        leftSpeed = 20;
+        rightSpeed = 20;
+    } else {
+        // Steer toward the line
+        float error = (float)weightedSum / blackCount;
+        int correction = (int)(kP * error);
+
+        leftSpeed = constrain(25 + correction, 0, 100);
+        rightSpeed = constrain(25 - correction, 0, 100);
+    }
+
+    RedRobot::WriteDCMotor(2, leftSpeed);
+    RedRobot::WriteDCMotor(3, rightSpeed);
+}
