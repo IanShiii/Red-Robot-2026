@@ -482,6 +482,10 @@ void StartRemoteControl() {
     in_remote_control.store(true);
 }
 
+void StopRemoteControl() {
+    in_remote_control.store(false);
+}
+
 bool IsRemoteControlled() {
     return in_remote_control.load();
 }

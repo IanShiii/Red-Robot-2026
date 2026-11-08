@@ -25,6 +25,9 @@ void setup() {
   // Initialize our variables
   started = false;
   counter = 0;
+
+  RedRobot::SetServo(0, 140); // Set the arm to a stow 
+  RedRobot::WriteDCMotor(0, 0);
 }
 
 enum class AutonMode {
@@ -45,28 +48,33 @@ void AutonomousLoop() {
 
     if (!started) {
         started = true;
-        // Autons::Auton1::Start();
     }
 
-    if (currentAutonMode == AutonMode::LineFollowToTrenchZone) {
-        if (counter < LINE_FOLLOW_TO_TRENCH_ZONE_COUNTERS) {
-            LineFollowing::FollowLine();
-        } else {
-            RedRobot::WriteDCMotor(2, 0);
-            RedRobot::WriteDCMotor(3, 0);
-            return;
-        }
-    }
+    RedRobot::WriteDCMotor(2, 40);
+    RedRobot::WriteDCMotor(3, 40);
 
-    if (currentAutonMode == AutonMode::LineFollowToButtonZone) {
-        if (counter < LINE_FOLLOW_TO_BUTTON_ZONE_COUNTERS) {
-            LineFollowing::FollowLine();
-        } else {
-            RedRobot::WriteDCMotor(2, 0);
-            RedRobot::WriteDCMotor(3, 0);
-            return;
-        }
-    }
+    // if (currentAutonMode == AutonMode::LineFollowToTrenchZone) {
+    //     if (counter < LINE_FOLLOW_TO_TRENCH_ZONE_COUNTERS) {
+    //         LineFollowing::FollowLine();
+    //     } else if (counter < LINE_FOLLOW_TO_TRENCH_ZONE_COUNTERS + 100) {
+    //         RedRobot::WriteDCMotor(0, -100);
+    //         return;
+    //     } else {
+    //         RedRobot::WriteDCMotor(2, 0);
+    //         RedRobot::WriteDCMotor(3, 0);
+    //         RedRobot::WriteDCMotor(0, 0);
+    //     }
+    // }
+
+    // if (currentAutonMode == AutonMode::LineFollowToButtonZone) {
+    //     if (counter < LINE_FOLLOW_TO_BUTTON_ZONE_COUNTERS) {
+    //         LineFollowing::FollowLine();
+    //     } else {
+    //         RedRobot::WriteDCMotor(2, 0);
+    //         RedRobot::WriteDCMotor(3, 0);
+    //         return;
+    //     }
+    // }
     
     // Print to the serial console to debug!
     Serial.print("[AUTO] Running ");

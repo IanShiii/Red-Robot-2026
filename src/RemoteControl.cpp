@@ -125,8 +125,8 @@ namespace RR_Controller
     int16_t rightWheelSpeed = 0;
 
     if (useTankDrive) {
-      leftWheelSpeed = shaped_leftY;
-      rightWheelSpeed = shaped_rightY;
+      leftWheelSpeed = -shaped_leftY;
+      rightWheelSpeed = -shaped_rightY;
 
       // Normalize to [-100, 100]
       int maxMagnitude = max(abs(leftWheelSpeed), abs(rightWheelSpeed));
@@ -136,8 +136,8 @@ namespace RR_Controller
         rightWheelSpeed = rightWheelSpeed * 75 / maxMagnitude;
       }
     } else {
-      leftWheelSpeed = leftY + rightX * ARCADE_TURN_SPEED_SCALE;
-      rightWheelSpeed = leftY - rightX * ARCADE_TURN_SPEED_SCALE;
+      leftWheelSpeed = -leftY + rightX * ARCADE_TURN_SPEED_SCALE;
+      rightWheelSpeed = -leftY - rightX * ARCADE_TURN_SPEED_SCALE;
 
       int maxMagnitude = max(abs(leftWheelSpeed), abs(rightWheelSpeed));
       if (maxMagnitude > 100) {
@@ -202,13 +202,15 @@ namespace RR_Controller
 
   void ButtonX_Pressed(bool buttonPressedDown)
   {
-    if (!RedRobot::IsRemoteControlled() && buttonPressedDown)
-    {
+    if (!RedRobot::IsRemoteControlled() && buttonPressedDown) {
       RedRobot::StartRemoteControl();
 
       // start remote controlled with the DC motors off
       RedRobot::WriteDCMotor(2, 0);
       RedRobot::WriteDCMotor(3, 0);
+      RedRobot::WriteDCMotor(0, 0);
+    } else if (RedRobot::IsRemoteControlled() && buttonPressedDown) {
+      RedRobot::StopRemoteControl();
     }
   }
 
@@ -218,7 +220,7 @@ namespace RR_Controller
     if (!RedRobot::IsRemoteControlled()) {
       return;
     }
-    RedRobot::SetServo(0, 70);
+    RedRobot::SetServo(0, 0);
   }
 
   // Nothing
@@ -235,6 +237,6 @@ namespace RR_Controller
     if (!RedRobot::IsRemoteControlled()) {
       return;
     }
-    RedRobot::SetServo(0, 170);
+    RedRobot::SetServo(0, 180);
   }
 }

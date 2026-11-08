@@ -42,6 +42,8 @@ void ReadLineSensor(uint16_t values[6]);
  */
 void StartRemoteControl();
 
+void StopRemoteControl();
+
 /**
  * @brief Returns whether or not the robot is set to receive commands from the remote control.
  */

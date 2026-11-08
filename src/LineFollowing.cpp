@@ -30,8 +30,8 @@ void LineFollowing::FollowLine() {
         float error = (float)weightedSum / blackCount;
         int correction = (int)(kP * error);
 
-        leftSpeed = constrain(25 + correction, 0, 100);
-        rightSpeed = constrain(25 - correction, 0, 100);
+        leftSpeed = constrain(30 + correction, 0, 100);
+        rightSpeed = constrain(30 - correction, 0, 100);
     }
 
     RedRobot::WriteDCMotor(2, leftSpeed);
