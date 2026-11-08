@@ -212,13 +212,13 @@ namespace RR_Controller
     }
   }
 
-  // Raise Arm
+  // Arm to Score
   void ButtonY_Pressed(bool buttonPressedDown)
   {
     if (!RedRobot::IsRemoteControlled()) {
       return;
     }
-    RedRobot::SetServo(0, 90);
+    RedRobot::SetServo(0, 70);
   }
 
   // Nothing
@@ -229,12 +229,12 @@ namespace RR_Controller
     }
   }
 
-  // Lower Arm
+  // Arm to Stow
   void ButtonA_Pressed(bool buttonPressedDown)
   {
     if (!RedRobot::IsRemoteControlled()) {
       return;
     }
-    RedRobot::SetServo(0, 0);
+    RedRobot::SetServo(0, 170);
   }
 }
